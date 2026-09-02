@@ -5,11 +5,22 @@
     const form = document.getElementById('campaignForm');
     if (!form) return; // form not on this page, do nothing
 
+    // Guard: if this script runs more than once on the same page
+    // (duplicate <script> tag, widget rendered twice, etc.), only
+    // ever attach ONE submit listener to this exact form element.
+    if (form.dataset.campaignFormBound === 'true') return;
+    form.dataset.campaignFormBound = 'true';
+
     const submitBtn = document.getElementById('submitBtn');
     const statusMessage = document.getElementById('statusMessage');
 
+    let isSubmitting = false; // guard against double-click / double-fire
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (isSubmitting) return;
+      isSubmitting = true;
+
       submitBtn.disabled = true;
       submitBtn.textContent = 'Submitting...';
       statusMessage.textContent = '';
@@ -46,6 +57,7 @@
         statusMessage.textContent = 'Failed to submit. Please try again.';
         statusMessage.className = 'error';
       } finally {
+        isSubmitting = false;
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit Booking';
       }
