@@ -34,7 +34,7 @@
       formData.append('brandVertical', document.getElementById('brandVertical').value);
       formData.append('campaignType', document.getElementById('campaignType').value);
       formData.append('startDate', document.getElementById('startDate').value);
-      /*formData.append('time', document.getElementById('time').value);*/
+      formData.append('time', document.getElementById('time').value);
       formData.append('description', document.getElementById('description').value);
       formData.append('keyVisualLink', document.getElementById('keyVisualLink').value);
       formData.append('cta', document.getElementById('cta').value);
