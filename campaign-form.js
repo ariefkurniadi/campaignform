@@ -26,40 +26,45 @@
       statusMessage.textContent = '';
       statusMessage.className = '';
 
+      // Helper function to safely read element values without throwing errors if an ID is missing
+      const getValue = (id) => {
+        const el = document.getElementById(id);
+        return el ? el.value : '';
+      };
+
       const formData = new URLSearchParams();
-      formData.append('requestorName', document.getElementById('requestorName').value);
-      formData.append('emailMember', document.getElementById('emailMember').value);
-      formData.append('officeEmail', document.getElementById('officeEmail').value);
-      formData.append('mobileNumber', document.getElementById('mobileNumber').value);
-      formData.append('brandVertical', document.getElementById('brandVertical').value);
-      formData.append('campaignType', document.getElementById('campaignType').value);
-      formData.append('startDate', document.getElementById('startDate').value);
-      formData.append('time', document.getElementById('time').value);
-      formData.append('description', document.getElementById('description').value);
-      formData.append('keyVisualLink', document.getElementById('keyVisualLink').value);
-      formData.append('cta', document.getElementById('cta').value);
-      formData.append('skuLink', document.getElementById('skuLink').value);
-      formData.append('note', document.getElementById('note').value);
+      formData.append('requestorName', getValue('requestorName'));
+      formData.append('emailMember', getValue('emailMember'));
+      formData.append('officeEmail', getValue('officeEmail'));
+      formData.append('mobileNumber', getValue('mobileNumber'));
+      formData.append('brandVertical', getValue('brandVertical'));
+      formData.append('campaignType', getValue('campaignType'));
+      formData.append('startDate', getValue('startDate'));
+      formData.append('endDate', getValue('endDate')); // <-- NEW: Added Campaign End Date
+      formData.append('time', getValue('time'));
+      formData.append('description', getValue('description'));
+      formData.append('keyVisualLink', getValue('keyVisualLink'));
+      formData.append('cta', getValue('cta'));
+      formData.append('skuLink', getValue('skuLink'));
+      formData.append('note', getValue('note'));
 
       try {
         await fetch(SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: formData.toString()
         });
-        statusMessage.textContent = 'Campaign successfully submitted!';
+
+        statusMessage.textContent = 'SYSTEM CONFIRMED: BOOKING TRANSMITTED!';
         statusMessage.className = 'success';
         form.reset();
       } catch (error) {
-        statusMessage.textContent = 'Failed to submit. Please try again.';
+        statusMessage.textContent = 'TRANSMISSION ERROR: PLEASE TRY AGAIN.';
         statusMessage.className = 'error';
       } finally {
-        isSubmitting = false;
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit Booking';
+        submitBtn.textContent = 'RESERVE SLOT NOW';
       }
     });
   }
