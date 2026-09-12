@@ -1,5 +1,5 @@
 (function () {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4K9RFQM5gXxZjT8uptmnv8Z75xtEp5pnEbkWFD9cjYXLgLULxBMLcwRFwDeX_46OJyQ/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxeI3YX0fbLvOI5GzqaqO3ThNJrsa_Eeh-lzsCctYrZJfGjD96-N4Uz58KVTsV6C2ko0g/exec';
 
     function init() {
         const form = document.getElementById('campaignForm');
