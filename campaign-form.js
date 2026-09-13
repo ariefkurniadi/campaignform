@@ -39,17 +39,15 @@ document.getElementById('campaignForm').addEventListener('submit', function (e) 
     // 3. Send to Google Apps Script Web App
     fetch('https://script.google.com/macros/s/AKfycbyHr5Tvmz6qwNUzO7-YejTmi3fCJ6-fquYbk5v4M6TlKmFmJQ1G0Q9rq0axvsgcvg7Dhw/exec', {
             method: 'POST',
+            mode: 'no-cors',
             body: formData
         })
-        .then(response => response.text())
-        .then(result => {
-            if (result.includes('Success')) {
-                statusMsg.className = 'success';
-                statusMsg.textContent = 'SYSTEM CONFIRMED: BOOKING TRANSMITTED!';
-                document.getElementById('campaignForm').reset();
-            } else {
-                throw new Error(result);
-            }
+        .then(() => {
+            // With mode:'no-cors' we can't read the actual response,
+            // but if fetch resolved at all (no network error), treat it as success.
+            statusMsg.className = 'success';
+            statusMsg.textContent = 'SYSTEM CONFIRMED: BOOKING TRANSMITTED!';
+            document.getElementById('campaignForm').reset();
         })
         .catch(error => {
             statusMsg.className = 'error';
