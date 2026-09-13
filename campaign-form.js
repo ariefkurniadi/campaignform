@@ -1,83 +1,64 @@
-(function () {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHr5Tvmz6qwNUzO7-YejTmi3fCJ6-fquYbk5v4M6TlKmFmJQ1G0Q9rq0axvsgcvg7Dhw/exec';
+document.getElementById('campaignForm').addEventListener('submit', function (e) {
+  e.preventDefault();
 
-    function init() {
-        const form = document.getElementById('campaignForm');
-        if (!form) return; // form not on this page, do nothing
+  const submitBtn = document.getElementById('submitBtn');
+  const statusMsg = document.getElementById('statusMessage');
 
-        // Guard: if this script runs more than once on the same page
-        // (duplicate <script> tag, widget rendered twice, etc.), only
-        // ever attach ONE submit listener to this exact form element.
-        if (form.dataset.campaignFormBound === 'true') return;
-        form.dataset.campaignFormBound = 'true';
+  submitBtn.disabled = true;
+  statusMsg.className = '';
+  statusMsg.textContent = 'Submitting form...';
 
-        const submitBtn = document.getElementById('submitBtn');
-        const statusMessage = document.getElementById('statusMessage');
+  // 1. Collect all checked Campaign Type values into a comma-separated string
+  const checkedBoxes = document.querySelectorAll('input[name="campaignType"]:checked');
+  const selectedCampaignTypes = Array.from(checkedBoxes).map(cb => cb.value).join(', ');
 
-        let isSubmitting = false; // guard against double-click / double-fire
+  // Validate at least one checkbox is selected if required
+  if (!selectedCampaignTypes) {
+    statusMsg.className = 'error';
+    statusMsg.textContent = 'Please select at least one Campaign Type.';
+    submitBtn.disabled = false;
+    return;
+  }
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (isSubmitting) return;
-            isSubmitting = true;
+  // 2. Build form payload
+  const formData = new URLSearchParams();
+  formData.append('requestorName', document.getElementById('requestorName').value);
+  formData.append('emailMember', document.getElementById('emailMember').value);
+  formData.append('officeEmail', document.getElementById('officeEmail').value);
+  formData.append('mobileNumber', document.getElementById('mobileNumber').value);
+  formData.append('brandVertical', document.getElementById('brandVertical').value);
+  
+  // Pass the joined string of checked checkboxes
+  formData.append('campaignType', selectedCampaignTypes);
 
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-            statusMessage.textContent = '';
-            statusMessage.className = '';
+  formData.append('startDate', document.getElementById('startDate').value);
+  formData.append('endDate', document.getElementById('endDate').value);
+  formData.append('description', document.getElementById('description').value || '');
+  formData.append('keyVisualLink', document.getElementById('keyVisualLink').value || '');
+  formData.append('cta', document.getElementById('cta').value || '');
+  formData.append('skuLink', document.getElementById('skuLink').value || '');
+  formData.append('note', document.getElementById('note').value || '');
 
-            // Helper function to safely read element values without throwing errors if an ID is missing
-            const getValue = (id) => {
-                const el = document.getElementById(id);
-                return el ? el.value : '';
-            };
-
-            const formData = new URLSearchParams();
-            formData.append('requestorName', getValue('requestorName'));
-            formData.append('emailMember', getValue('emailMember'));
-            formData.append('officeEmail', getValue('officeEmail'));
-            formData.append('mobileNumber', getValue('mobileNumber'));
-            formData.append('brandVertical', getValue('brandVertical'));
-            formData.append('campaignType', getValue('campaignType'));
-            formData.append('startDate', getValue('startDate'));
-            formData.append('endDate', getValue('endDate')); // <-- NEW: Added Campaign End Date
-            formData.append('time', getValue('time'));
-            formData.append('description', getValue('description'));
-            formData.append('keyVisualLink', getValue('keyVisualLink'));
-            formData.append('cta', getValue('cta'));
-            formData.append('skuLink', getValue('skuLink'));
-            formData.append('note', getValue('note'));
-
-            try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: formData.toString()
-                });
-
-                statusMessage.textContent = 'SYSTEM CONFIRMED: BOOKING TRANSMITTED!';
-                statusMessage.className = 'success';
-                form.reset();
-            } catch (error) {
-                statusMessage.textContent = 'TRANSMISSION ERROR: PLEASE TRY AGAIN.';
-                statusMessage.className = 'error';
-            } finally {
-                isSubmitting = false; // Reset lock so users can submit again
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'RESERVE SLOT NOW';
-            }
-        });
-    }
-
-    // Run now if DOM is already ready, otherwise wait for it.
-    // This matters because the embed widget may inject this script
-    // before or after the form markup depending on the CMS.
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
-})();
+  // 3. Send to Google Apps Script Web App
+  fetch('https://script.google.com/macros/s/AKfycbyHr5Tvmz6qwNUzO7-YejTmi3fCJ6-fquYbk5v4M6TlKmFmJQ1G0Q9rq0axvsgcvg7Dhw/exec', {
+    method: 'POST',
+    body: formData
+  })
+    .then(response => response.text())
+    .then(result => {
+      if (result.includes('Success')) {
+        statusMsg.className = 'success';
+        statusMsg.textContent = 'SYSTEM CONFIRMED: BOOKING TRANSMITTED!';
+        document.getElementById('campaignForm').reset();
+      } else {
+        throw new Error(result);
+      }
+    })
+    .catch(error => {
+      statusMsg.className = 'error';
+      statusMsg.textContent = 'TRANSMISSION ERROR: PLEASE TRY AGAIN.' + error.message;
+    })
+    .finally(() => {
+      submitBtn.disabled = false;
+    });
+});
