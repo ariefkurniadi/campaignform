@@ -8,7 +8,7 @@ document.getElementById('campaignForm').addEventListener('submit', function (e) 
   statusMsg.className = '';
   statusMsg.textContent = 'Submitting form...';
 
-  // 1. Collect all checked Campaign Type values into a comma-separated string
+  // 1. Collect checked Campaign Type values into a comma-separated string
   const checkedBoxes = document.querySelectorAll('input[name="campaignType"]:checked');
   const selectedCampaignTypes = Array.from(checkedBoxes).map(cb => cb.value).join(', ');
 
@@ -36,7 +36,7 @@ document.getElementById('campaignForm').addEventListener('submit', function (e) 
   formData.append('skuLink', document.getElementById('skuLink').value || '');
   formData.append('note', document.getElementById('note').value || '');
 
-  // 3. Send to Google Apps Script Web App with explicit headers
+  // 3. Send to Google Apps Script Web App
   fetch('https://script.google.com/macros/s/AKfycbyHr5Tvmz6qwNUzO7-YejTmi3fCJ6-fquYbk5v4M6TlKmFmJQ1G0Q9rq0axvsgcvg7Dhw/exec', {
     method: 'POST',
     headers: {
