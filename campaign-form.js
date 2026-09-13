@@ -20,8 +20,8 @@ document.getElementById('campaignForm').addEventListener('submit', function (e) 
         return;
     }
 
-    // 2. Build form payload
-    const formData = new URLSearchParams();
+    // 2. Build form payload using standard FormData
+    const formData = new FormData();
     formData.append('requestorName', document.getElementById('requestorName').value || '');
     formData.append('emailMember', document.getElementById('emailMember').value || '');
     formData.append('officeEmail', document.getElementById('officeEmail').value || '');
@@ -39,10 +39,7 @@ document.getElementById('campaignForm').addEventListener('submit', function (e) 
     // 3. Send to Google Apps Script Web App
     fetch('https://script.google.com/macros/s/AKfycbyHr5Tvmz6qwNUzO7-YejTmi3fCJ6-fquYbk5v4M6TlKmFmJQ1G0Q9rq0axvsgcvg7Dhw/exec', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: formData.toString()
+            body: formData
         })
         .then(response => response.text())
         .then(result => {
