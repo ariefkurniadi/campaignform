@@ -37,14 +37,17 @@ document.getElementById('campaignForm').addEventListener('submit', function (e) 
     formData.append('note', document.getElementById('note').value || '');
 
     // 3. Send to Google Apps Script Web App
+    // NOTE: mode: 'no-cors' is required here. Google Apps Script web apps do not
+    // return CORS headers, so the browser blocks JavaScript from reading the response
+    // even though the request completes and the data is saved successfully.
+    // With no-cors we can't read the response body, so we treat any resolved
+    // fetch (no network-level error) as a success.
     fetch('https://script.google.com/macros/s/AKfycbyHr5Tvmz6qwNUzO7-YejTmi3fCJ6-fquYbk5v4M6TlKmFmJQ1G0Q9rq0axvsgcvg7Dhw/exec', {
             method: 'POST',
             mode: 'no-cors',
             body: formData
         })
         .then(() => {
-            // With mode:'no-cors' we can't read the actual response,
-            // but if fetch resolved at all (no network error), treat it as success.
             statusMsg.className = 'success';
             statusMsg.textContent = 'SYSTEM CONFIRMED: BOOKING TRANSMITTED!';
             document.getElementById('campaignForm').reset();
