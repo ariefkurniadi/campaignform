@@ -36,10 +36,13 @@ document.getElementById('campaignForm').addEventListener('submit', function (e) 
     formData.append('skuLink', document.getElementById('skuLink').value || '');
     formData.append('note', document.getElementById('note').value || '');
 
-    // 3. Send to Google Apps Script Web App with explicit headers
+    // 3. Send to Google Apps Script Web App
     fetch('https://script.google.com/macros/s/AKfycbyHr5Tvmz6qwNUzO7-YejTmi3fCJ6-fquYbk5v4M6TlKmFmJQ1G0Q9rq0axvsgcvg7Dhw/exec', {
             method: 'POST',
-            body: formData
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formData.toString()
         })
         .then(response => response.text())
         .then(result => {
