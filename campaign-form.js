@@ -37,7 +37,7 @@ document.getElementById('campaignForm').addEventListener('submit', function (e) 
         note: document.getElementById('note').value || ''
     };
 
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHr5Tvmz6qwNUzO7-YejTmi3fCJ6-fquYbk5v4M6TlKmFmJQ1G0Q9rq0axvsgcvg7Dhw/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRL-IFA4Iji0qIHKGQVSrLucXLuhvLIGoi0brg_SjvujGKVXYGWg4FbJUoaxawiZgk/exec';
 
     // 3. Submit via a hidden iframe instead of fetch().
     // This site's Service Worker intercepts fetch() calls and strips the
